@@ -28,7 +28,7 @@ const NavbarUser = () => {
               <Nav.Link
                 href="/"
                 style={{
-                  color: "#2b46a6",
+                  color: "#1c1a4e",
                   fontSize: "20px",
                   fontFamily: "Roboto",
                 }}
@@ -38,7 +38,7 @@ const NavbarUser = () => {
               <Nav.Link
                 href="/bookmark"
                 style={{
-                  color: "#2b46a6",
+                  color: "#1c1a4e",
                   fontSize: "20px",
                   fontFamily: "Roboto",
                 }}
