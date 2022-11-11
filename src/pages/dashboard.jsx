@@ -3,14 +3,31 @@ import { Button, Col, Container, Row, Card } from "react-bootstrap";
 import Navbar from "../components/navbar";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
+import { Pagination } from "@mui/material";
 
 const Dashboard = () => {
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState();
   const [id, setId] = useState();
   let fav = [];
-  let page = 0;
   let size = 10;
+  const [page, setPage] = useState(1);
+  const [maxpage, setMaxPage] = useState();
+  const handleChange = async (e, p) => {
+    setPage(p);
+    await axios
+      .get(
+        `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
+          id
+        )}&page=${p - 1}&size=${size}`
+      )
+      .then((response) => {
+        setBooks(response.data);
+      })
+      .catch((error) => {
+        alert(error.message);
+      });
+  };
   const getCategories = async () => {
     await axios
       .get(
@@ -32,19 +49,30 @@ const Dashboard = () => {
 
   const getBooks = async (e) => {
     e.preventDefault();
+    setPage(1);
     setId(e.target.id);
     await axios
       .get(
         `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
           e.target.id
-        )}&page=${page}&size=${size}`
+        )}&page=${0}&size=${size}`
       )
       .then((response) => {
         setBooks(response.data);
-        console.log(response.data);
       })
       .catch((error) => {
         alert(error.message);
+      });
+
+    await axios
+      .get(
+        `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
+          e.target.id
+        )}`
+      )
+      .then((response) => {
+        console.log(response.data.length);
+        setMaxPage(Math.ceil(response.data.length / size));
       });
   };
 
@@ -93,6 +121,23 @@ const Dashboard = () => {
           </Col>
           <Col md={2}></Col>
         </Row>
+        <Container>
+          <Row>
+            <Col></Col>
+            <Col>
+              {books === undefined ? null : (
+                <>
+                  <Pagination
+                    count={maxpage}
+                    page={page}
+                    onChange={handleChange}
+                  />
+                </>
+              )}
+            </Col>
+            <Col></Col>
+          </Row>
+        </Container>
         <Row className="mt-3">
           <Col
             className="border border-light rounded-2"
