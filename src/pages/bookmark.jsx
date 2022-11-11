@@ -43,6 +43,16 @@ const Bookmark = () => {
   return (
     <div>
       <NavbarUser />
+      <Container fluid>
+        <Row>
+          <Col></Col>
+          <Col xl={3} className="pt-3">
+            <Button variant="danger" onClick={() => localStorage.clear()} className="border shadow">
+              CLEAR FAVOURITE
+            </Button>
+          </Col>
+        </Row>
+      </Container>
       <Container
         className="mt-5"
         style={{ fontFamily: "Roboto", color: "#1c1a4e" }}

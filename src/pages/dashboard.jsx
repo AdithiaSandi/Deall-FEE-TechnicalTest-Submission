@@ -3,14 +3,21 @@ import { Button, Col, Container, Row, Card } from "react-bootstrap";
 import NavbarUser from "../components/navbar";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
-import { Pagination } from "@mui/material";
+import {
+  Pagination,
+  Box,
+  InputLabel,
+  MenuItem,
+  FormControl,
+  Select,
+  SelectChangeEvent,
+} from "@mui/material";
 
 const Dashboard = () => {
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState();
   const [id, setId] = useState();
-  let fav = [];
-  let size = 10;
+  const [size, setSize] = useState(10);
   const [page, setPage] = useState(1);
   const [maxpage, setMaxPage] = useState();
   const handleChange = async (e, p) => {
@@ -71,7 +78,6 @@ const Dashboard = () => {
         )}`
       )
       .then((response) => {
-        console.log(response.data.length);
         setMaxPage(Math.ceil(response.data.length / size));
       });
   };
@@ -91,6 +97,29 @@ const Dashboard = () => {
       alert("Already Bookmarked");
     }
     localStorage.setItem("data", JSON.stringify(user));
+  };
+
+  const handleSize = async (e) => {
+    setSize(e.target.value);
+    await axios
+      .get(
+        `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
+          id
+        )}&page=${0}&size=${e.target.value}`
+      )
+      .then((response) => {
+        setBooks(response.data);
+      });
+
+    await axios
+      .get(
+        `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
+          id
+        )}`
+      )
+      .then((response) => {
+        setMaxPage(Math.ceil(response.data.length / e.target.value));
+      });
   };
 
   return (
@@ -131,27 +160,40 @@ const Dashboard = () => {
                     .name
                 : "none"}
             </h2>
-            <Button variant="danger" onClick={() => localStorage.clear()}>
-              CLEAR FAVOURITE
-            </Button>
           </Col>
           <Col md={2}></Col>
         </Row>
         <Container>
           <Row>
             <Col></Col>
-            <Col>
-              {books === undefined ? null : (
-                <>
+            {books == undefined ? null : (
+              <>
+                <Col>
                   <Pagination
                     count={maxpage}
                     page={page}
                     onChange={handleChange}
                   />
-                </>
-              )}
-            </Col>
-            <Col></Col>
+                </Col>
+                <Col>
+                  <FormControl>
+                    <InputLabel id="demo-simple-select-label">Size</InputLabel>
+                    <Select
+                      labelId="demo-simple-select-label"
+                      id="demo-simple-select"
+                      value={size}
+                      label="Size"
+                      onChange={(e) => handleSize(e)}
+                    >
+                      <MenuItem value={10}>10</MenuItem>
+                      <MenuItem value={15}>15</MenuItem>
+                      <MenuItem value={20}>20</MenuItem>
+                      <MenuItem value={25}>25</MenuItem>
+                    </Select>
+                  </FormControl>
+                </Col>
+              </>
+            )}
           </Row>
         </Container>
         <Row className="mt-3">
