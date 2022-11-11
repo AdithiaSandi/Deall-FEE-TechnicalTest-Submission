@@ -1,6 +1,6 @@
 import React from "react";
 import { Button, Col, Container, Row, Card } from "react-bootstrap";
-import Navbar from "../components/navbar";
+import NavbarUser from "../components/navbar";
 import axios from "axios";
 import { useEffect, useState, useRef } from "react";
 import { Pagination } from "@mui/material";
@@ -80,9 +80,22 @@ const Dashboard = () => {
     getCategories();
   }, []);
 
+  const handleFav = (item) => {
+    let user = [];
+    let data = JSON.parse(localStorage.getItem("data") || "[]");
+    user = data;
+
+    if (user.every((obj) => obj.id !== item.id)) {
+      user.push(item);
+    } else {
+      alert("Already Bookmarked");
+    }
+    localStorage.setItem("data", JSON.stringify(user));
+  };
+
   return (
     <div>
-      <Navbar />
+      <NavbarUser />
       <Container fluid className="mt-5" id="categories-button">
         <Row className="text-center ps-5 pe-5">
           {categories.map((items) => {
@@ -118,6 +131,9 @@ const Dashboard = () => {
                     .name
                 : "none"}
             </h2>
+            <Button variant="danger" onClick={() => localStorage.clear()}>
+              CLEAR FAVOURITE
+            </Button>
           </Col>
           <Col md={2}></Col>
         </Row>
@@ -180,7 +196,12 @@ const Dashboard = () => {
                             <br></br>
                             {items.description}
                           </Card.Text>
-                          <Button variant="primary">Go somewhere</Button>
+                          <Button
+                            variant="primary"
+                            onClick={() => handleFav(items)}
+                          >
+                            Add Favourite
+                          </Button>
                         </Card.Body>
                       </Card>
                     );
