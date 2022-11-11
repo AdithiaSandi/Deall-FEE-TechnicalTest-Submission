@@ -153,7 +153,11 @@ const Dashboard = () => {
                   {books.map((items) => {
                     return (
                       <Card
-                        style={{ width: "20rem", maxHeight: "700px" }}
+                        style={{
+                          width: "20rem",
+                          maxHeight: "700px",
+                          color: `#1c1a4e`,
+                        }}
                         className="m-3 shadow border-0 text-wrap text-break"
                       >
                         <Card.Img variant="top" src={items.cover_url} />
