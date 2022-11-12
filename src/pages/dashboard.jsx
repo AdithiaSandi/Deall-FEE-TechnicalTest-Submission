@@ -2,20 +2,22 @@ import React from "react";
 import { Button, Col, Container, Row, Card } from "react-bootstrap";
 import NavbarUser from "../components/navbar";
 import axios from "axios";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import {
   Pagination,
-  Box,
   InputLabel,
   MenuItem,
   FormControl,
   Select,
-  SelectChangeEvent,
+  TextField,
+  ToggleButton,
+  ToggleButtonGroup,
 } from "@mui/material";
 
 const Dashboard = () => {
   const [categories, setCategories] = useState([]);
   const [books, setBooks] = useState();
+  const [base, setBase] = useState();
   const [id, setId] = useState();
   const [size, setSize] = useState(10);
   const [page, setPage] = useState(1);
@@ -30,6 +32,7 @@ const Dashboard = () => {
       )
       .then((response) => {
         setBooks(response.data);
+        setBase(response.data);
       })
       .catch((error) => {
         alert(error.message);
@@ -66,6 +69,7 @@ const Dashboard = () => {
       )
       .then((response) => {
         setBooks(response.data);
+        setBase(response.data);
       })
       .catch((error) => {
         alert(error.message);
@@ -101,14 +105,16 @@ const Dashboard = () => {
 
   const handleSize = async (e) => {
     setSize(e.target.value);
+    // setPage(1);
     await axios
       .get(
         `https://asia-southeast2-sejutacita-app.cloudfunctions.net/fee-assessment-books?categoryId=${parseInt(
           id
-        )}&page=${0}&size=${e.target.value}`
+        )}&page=${page - 1}&size=${e.target.value}`
       )
       .then((response) => {
         setBooks(response.data);
+        setBase(response.data);
       });
 
     await axios
@@ -120,6 +126,85 @@ const Dashboard = () => {
       .then((response) => {
         setMaxPage(Math.ceil(response.data.length / e.target.value));
       });
+  };
+
+  const [input, setInput] = useState("");
+  const handleInput = (e) => {
+    setInput(e.target.value);
+    let temp = [];
+    if (e.target.value == "" || option == null) {
+      temp = base;
+    } else {
+      setResult([]);
+      base.forEach((item, index) => {
+        if (option == "title") {
+          if (item.title.toLowerCase().includes(e.target.value.toLowerCase())) {
+            temp.push(item);
+          }
+        } else if (option == "authors") {
+          for (let i = 0; i < item.authors.length; i++) {
+            if (
+              item.authors[i]
+                .toLowerCase()
+                .includes(e.target.value.toLowerCase())
+            ) {
+              temp.push(item);
+              break;
+            }
+          }
+        }
+      });
+    }
+    setBooks(temp);
+    console.log(temp);
+    console.log(e.target.value);
+  };
+  const handleSearch = (e) => {
+    if (books !== base) {
+      setBooks(base);
+    }
+  };
+  const [result, setResult] = useState();
+  const SearchResult = () => {
+    setResult([]);
+    let temp = [];
+    books.forEach((item, index) => {
+      if (item.title.toLowerCase().includes(input.toLowerCase())) {
+        console.log(item.title);
+        temp.push(item);
+      }
+    });
+    console.log(temp);
+  };
+
+  const [option, setOption] = useState();
+  const handleOption = (e, value) => {
+    setOption(value);
+    console.log(value);
+
+    let temp = [];
+    if (input == "" || value == null) {
+      temp = base;
+    } else {
+      setResult([]);
+      base.forEach((item, index) => {
+        if (value == "title") {
+          if (item.title.toLowerCase().includes(input.toLowerCase())) {
+            temp.push(item);
+          }
+        } else if (value == "authors") {
+          for (let i = 0; i < item.authors.length; i++) {
+            if (item.authors[i].toLowerCase().includes(input.toLowerCase())) {
+              temp.push(item);
+              break;
+            }
+          }
+        }
+      });
+    }
+    setBooks(temp);
+    console.log(temp);
+    console.log(e.target.value);
   };
 
   return (
@@ -145,56 +230,100 @@ const Dashboard = () => {
           })}
         </Row>
       </Container>
-      <Container
-        fluid
-        className="mt-5 border-top border-5 border-primary"
-        style={{ fontFamily: "Roboto" }}
-      >
-        <Row className="mt-3">
-          <Col md={2}></Col>
-          <Col md={8}>
-            <h2 style={{ color: `#1c1a4e` }}>
-              Showing :{" "}
-              {id !== undefined
-                ? categories[categories.findIndex((items) => items.id == id)]
-                    .name
-                : "none"}
-            </h2>
-          </Col>
-          <Col md={2}></Col>
-        </Row>
-        <Container>
+      <Container className="mt-5" style={{ fontFamily: "Roboto" }} fluid>
+        <Container className="border-top border-primary border-5">
+          <Row className="mt-3 pt-3">
+            <Col md={2}></Col>
+            <Col md={8}>
+              <h2 style={{ color: `#1c1a4e` }}>
+                Showing :{" "}
+                <mark className="bg-primary text-white">
+                  {id !== undefined
+                    ? categories[
+                        categories.findIndex((items) => items.id == id)
+                      ].name
+                    : "none"}
+                </mark>
+              </h2>
+            </Col>
+            <Col md={2}></Col>
+          </Row>
           <Row>
             <Col></Col>
-            {books == undefined ? null : (
-              <>
-                <Col>
-                  <Pagination
-                    count={maxpage}
-                    page={page}
-                    onChange={handleChange}
-                  />
-                </Col>
-                <Col>
-                  <FormControl>
-                    <InputLabel id="demo-simple-select-label">Size</InputLabel>
-                    <Select
-                      labelId="demo-simple-select-label"
-                      id="demo-simple-select"
-                      value={size}
-                      label="Size"
-                      onChange={(e) => handleSize(e)}
-                    >
-                      <MenuItem value={10}>10</MenuItem>
-                      <MenuItem value={15}>15</MenuItem>
-                      <MenuItem value={20}>20</MenuItem>
-                      <MenuItem value={25}>25</MenuItem>
-                    </Select>
-                  </FormControl>
-                </Col>
-              </>
-            )}
+            <Col></Col>
+            <Col></Col>
+            <Col>
+              {books == undefined ? null : (
+                <>
+                  <Col>
+                    <TextField
+                      id="outlined-search"
+                      label="Search field"
+                      type="search"
+                      onChange={(e) => handleInput(e)}
+                      fullWidth
+                    />
+                  </Col>
+                  <Col className="mt-3 mb-3">
+                    <Container className="justify-content-center">
+                      <Row className="justify-content-center text-center">
+                        <Col>
+                          <b>By : </b>
+                          <ToggleButtonGroup
+                            color="primary"
+                            value={option}
+                            exclusive
+                            onChange={handleOption}
+                            aria-label="Platform"
+                          >
+                            <ToggleButton value="title">Title</ToggleButton>
+                            <ToggleButton value="authors">
+                              Author(s)
+                            </ToggleButton>
+                          </ToggleButtonGroup>
+                        </Col>
+                      </Row>
+                    </Container>
+                  </Col>
+                </>
+              )}
+            </Col>
           </Row>
+          <Container>
+            <Row>
+              <Col></Col>
+              {books == undefined ? null : (
+                <>
+                  <Col>
+                    <Pagination
+                      count={maxpage}
+                      page={page}
+                      onChange={handleChange}
+                    />
+                  </Col>
+                  <Col>
+                    <FormControl>
+                      <InputLabel id="demo-simple-select-label">
+                        Size
+                      </InputLabel>
+                      <Select
+                        labelId="demo-simple-select-label"
+                        id="demo-simple-select"
+                        value={size}
+                        label="Size"
+                        onChange={(e) => handleSize(e)}
+                      >
+                        <MenuItem value={10}>10</MenuItem>
+                        <MenuItem value={15}>15</MenuItem>
+                        <MenuItem value={20}>20</MenuItem>
+                        <MenuItem value={25}>25</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Col>
+                </>
+              )}
+            </Row>
+          </Container>
         </Container>
         <Row className="mt-3">
           <Col
