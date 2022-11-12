@@ -8,6 +8,9 @@ const Bookmark = () => {
   const [data, setData] = useState(JSON.parse(localStorage.getItem("data")));
 
   const [categories, setCategories] = useState([]);
+
+
+  ////////////////////// BOOKS CATEGORIES REQUEST //////////////////
   const getCategories = async () => {
     await axios
       .get(
@@ -31,6 +34,9 @@ const Bookmark = () => {
     getCategories();
   }, []);
 
+
+
+  /////////////////////////// REMOVE ITEM FROM BOOKMARK ////////////////////
   const handleUnFav = (index) => {
     let user = [];
     let data = JSON.parse(localStorage.getItem("data") || "[]");

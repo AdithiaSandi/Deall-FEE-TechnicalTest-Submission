@@ -22,6 +22,9 @@ const Dashboard = () => {
   const [size, setSize] = useState(10);
   const [page, setPage] = useState(1);
   const [maxpage, setMaxPage] = useState();
+
+
+  //////////////////////// PAGE CHANGER /////////////////////////////
   const handleChange = async (e, p) => {
     setPage(p);
     await axios
@@ -38,6 +41,8 @@ const Dashboard = () => {
         alert(error.message);
       });
   };
+
+  //////////////////////// BOOKS CATEGORIES REQUEST ///////////////////////
   const getCategories = async () => {
     await axios
       .get(
@@ -57,6 +62,8 @@ const Dashboard = () => {
       });
   };
 
+
+  ///////////////////////// BOOKS REQUEST //////////////////////////
   const getBooks = async (e) => {
     e.preventDefault();
     setPage(1);
@@ -90,6 +97,8 @@ const Dashboard = () => {
     getCategories();
   }, []);
 
+
+  ///////////////////////// BOOKMARK ///////////////////////////////
   const handleFav = (item) => {
     let user = [];
     let data = JSON.parse(localStorage.getItem("data") || "[]");
@@ -103,6 +112,8 @@ const Dashboard = () => {
     localStorage.setItem("data", JSON.stringify(user));
   };
 
+
+  ////////////////////// PAGE SIZE CHANGER //////////////////////
   const handleSize = async (e) => {
     setSize(e.target.value);
     // setPage(1);
@@ -128,6 +139,8 @@ const Dashboard = () => {
       });
   };
 
+
+  //////////////////// SEARCH INPUT HANDLER /////////////////
   const [input, setInput] = useState("");
   const handleInput = (e) => {
     setInput(e.target.value);
@@ -135,7 +148,6 @@ const Dashboard = () => {
     if (e.target.value == "" || option == null) {
       temp = base;
     } else {
-      setResult([]);
       base.forEach((item, index) => {
         if (option == "title") {
           if (item.title.toLowerCase().includes(e.target.value.toLowerCase())) {
@@ -156,37 +168,17 @@ const Dashboard = () => {
       });
     }
     setBooks(temp);
-    console.log(temp);
-    console.log(e.target.value);
-  };
-  const handleSearch = (e) => {
-    if (books !== base) {
-      setBooks(base);
-    }
-  };
-  const [result, setResult] = useState();
-  const SearchResult = () => {
-    setResult([]);
-    let temp = [];
-    books.forEach((item, index) => {
-      if (item.title.toLowerCase().includes(input.toLowerCase())) {
-        console.log(item.title);
-        temp.push(item);
-      }
-    });
-    console.log(temp);
   };
 
+  ///////////////// SEARCH OPTION ////////////////////////
   const [option, setOption] = useState();
   const handleOption = (e, value) => {
     setOption(value);
-    console.log(value);
 
     let temp = [];
     if (input == "" || value == null) {
       temp = base;
     } else {
-      setResult([]);
       base.forEach((item, index) => {
         if (value == "title") {
           if (item.title.toLowerCase().includes(input.toLowerCase())) {
@@ -203,8 +195,6 @@ const Dashboard = () => {
       });
     }
     setBooks(temp);
-    console.log(temp);
-    console.log(e.target.value);
   };
 
   return (
