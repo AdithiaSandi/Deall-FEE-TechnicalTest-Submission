@@ -13,7 +13,6 @@ ookmark section
 <li>When a user is viewing the list of books of a category, a search feature is required to help him/her easily find the books based on title or
 author. There’s no Search API provided, the user is only allowed to search from the list already retrieved previously.
 <li>The source code has to be available in github.com
-
-
-
-
+<br>
+<br>
+<i>*I'm using browser extension to solve the API CORS problem.</i> <br>[here](https://chrome.google.com/webstore/detail/cors-unblock/lfhmikememgdcahcdlaciloancbhjino)
